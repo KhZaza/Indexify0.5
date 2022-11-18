@@ -261,7 +261,6 @@ public class LoginController {
         usernameExists.setVisible(false);
 
         Button submit = new Button("Submit");
-        //is this supposed to be like this //yes// is it missing ) ? // no
         submit.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
                 String username = usernameField.getText();
