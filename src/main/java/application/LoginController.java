@@ -431,9 +431,7 @@ public class LoginController {
             //Read from the original file and write to the new
             //unless content matches data to be removed.
             while ((line = br.readLine()) != null) {
-
                 if (line.trim().indexOf(usernameSaved) == -1) {
-
                     pw.println(line);
                     pw.flush();
                 }

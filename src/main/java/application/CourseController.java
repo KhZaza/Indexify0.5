@@ -196,5 +196,59 @@ public class CourseController {
 
     }
 
+    public void removeLineFromFile(String courseToRemove) {
+
+        try {
+
+            BufferedReader buffR = new BufferedReader(new FileReader("currentUser.txt"));
+            String currentUserName = buffR.readLine();
+
+
+            File inFile = new File(currentUserName +".txt");
+            BufferedReader br = new BufferedReader(new FileReader(inFile));
+
+            if (!inFile.isFile()) {
+                System.out.println("Parameter is not an existing file");
+                return;
+            }
+
+            //Construct the new file that will later be renamed to the original filename.
+            File tempFile = new File(inFile.getAbsolutePath() + ".tmp");
+
+            //BufferedReader br = new BufferedReader(new FileReader());
+            PrintWriter pw = new PrintWriter(new FileWriter(tempFile));
+
+            String line = null;
+
+            //Read from the original file and write to the new
+            //unless content matches data to be removed.
+            while ((line = br.readLine()) != null) {
+
+                if (line.trim().indexOf(courseToRemove) == -1) {
+
+                    pw.println(line);
+                    pw.flush();
+                }
+
+
+            }
+            pw.close();
+            br.close();
+
+            //Delete the original file
+            inFile.delete();
+            //Rename the new file to the original file
+            tempFile.renameTo(inFile);
+
+
+        }
+        catch (FileNotFoundException ex) {
+            ex.printStackTrace();
+        }
+        catch (IOException ex) {
+            ex.printStackTrace();
+        }
+    }
+
 }
 
