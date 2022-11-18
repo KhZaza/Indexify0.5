@@ -75,6 +75,13 @@ public class LoginController {
     public Label securityWRONG;
     @FXML
     public Label UserWRONG;
+    @FXML
+//    public Label currentUser;
+
+    public String saveCurrentUser  ;
+
+
+
 
     /**
      * Action function for the login button.  Allows the button to run the validate functions and login success functions.
@@ -106,7 +113,16 @@ public class LoginController {
                 buff1.close();
 
                 loginSuccess(event);
-                usernameSaved = usernameTextField.getText();
+//                usernameSaved = usernameTextField.getText();
+
+
+                //Trying to figure out how to save save the saveCurrentUser to currentuser
+//                saveCurrentUser = usernameSaved;
+
+                System.out.println(saveCurrentUser + "From LoginButton2");
+//                currentUser.setText(saveCurrentUser);
+//                System.out.println("CurrentUser" + currentUser.getText());
+
                 stage.close();
             } else {
                 loginMessageLabel.setText("Username or Password does not exist.");
@@ -138,6 +154,15 @@ public class LoginController {
             stage.setScene(new Scene(root, 1024, 768));
             stage.setResizable(false);
             stage.show();
+            System.out.println(saveCurrentUser + " from loginSuccess");
+//            currentUser.setText(saveCurrentUser);
+//            System.out.println(usernameSaved);
+////            TimeUnit.SECONDS.sleep(7);
+//            currentUser = usernameSaved;
+////            currentUser.setText(usernameSaved);
+////            System.out.println(currentUser.getText());
+//            System.out.println(currentUser);
+
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -225,12 +250,15 @@ public class LoginController {
         Label usernameLabel = new Label("Username: ");
         TextField usernameField = new TextField();
 
-
         Label passwordLabel = new Label("Password: ");
         PasswordField passwordField = new PasswordField();
 
         Label securityQuestion = new Label("Security Question: What city were you born in? ");
         TextField question = new TextField();
+
+        Label usernameExists = new Label("Username already Exists");
+        usernameExists.setVisible(false);
+
         Button submit = new Button("Submit");
         submit.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
@@ -263,7 +291,7 @@ public class LoginController {
         });
 
         HBox userBox = new HBox();
-        userBox.getChildren().addAll(usernameLabel, usernameField);
+        userBox.getChildren().addAll(usernameLabel, usernameField,usernameExists);
         userBox.setPadding(new Insets(10, 10, 10, 10));
 
         HBox passBox = new HBox();
@@ -440,5 +468,9 @@ public class LoginController {
         catch (IOException ex) {
             ex.printStackTrace();
         }
+    }
+    public void setCurrentUser(String s)
+    {
+        saveCurrentUser = s;
     }
 }

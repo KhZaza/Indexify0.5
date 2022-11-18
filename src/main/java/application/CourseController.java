@@ -2,9 +2,6 @@ package application;
 
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.geometry.HPos;
-import javafx.geometry.NodeOrientation;
-import javafx.geometry.VPos;
 import javafx.scene.*;
 import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
@@ -17,7 +14,7 @@ import java.util.Scanner;
 import application.LoginController;
 
 
-public class CourseController extends LoginController {
+public class CourseController {
     @FXML
     Button addButton;
     @FXML
@@ -41,32 +38,27 @@ public class CourseController extends LoginController {
     @FXML
     Integer indexCol = 0;
     @FXML
-    int counter = 0;
+    int counter;
     @FXML
     Button logoutButton;
+    @FXML
+    TabPane tabCourses;
+    @FXML
+    public Label currentUser;
+    @FXML
+    Button modButton;
+    @FXML
+    Label renameLabelText;
+    @FXML
+    TextField renameText;
+    @FXML
+    Button delButton;
+
+    public String usernameSaved;
+//    public int counter = 0;
+//    public String saveCurrentUser;
 
 
-
-
-    /**
-     * This class is used in order to grab nodes from the gridPane to make deletion possible, as GridPane doesn't have a delete method
-     * inherently.
-     * @param gridPane1 Any GridPane object
-     * @param col The column that is iterated by Integer indexCol
-     * @param row The row that is iterated by Integer indexRow
-     * @return Returns the node(in this case a button/button bar) of the particular cell of GridPane
-     */
-
-    public Node getNode(GridPane gridPane1, Integer col, Integer row)
-    {
-        for (Node node : gridPane1.getChildren())
-        {
-            if (gridPane1.getColumnIndex(node) == col && gridPane1.getRowIndex(node) == row) {
-                return node;
-            }
-        }
-        return null;
-    }
 
 
     @FXML
@@ -185,8 +177,10 @@ public class CourseController extends LoginController {
         Parent root;
         try
         {
-            usernameSaved = "";
-            passwordSaved = "";
+            File file1 = new File("currentUser.txt");
+            BufferedWriter buff1 = new BufferedWriter(new FileWriter(file1));
+            buff1.write("");
+            buff1.close();
             root = FXMLLoader.load(Main.class.getResource("login.fxml"));
             Stage stage = (Stage) logoutButton.getScene().getWindow();
             stage.setTitle("Indexify");
