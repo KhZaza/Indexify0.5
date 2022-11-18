@@ -1,6 +1,7 @@
 package application;
 
 
+import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -25,6 +26,12 @@ import java.io.IOException;
 import java.util.ResourceBundle;
 import java.net.URL;
 import java.util.*;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
+import application.CourseController;
+
+
+
 
 public class LoginController {
 
@@ -74,12 +81,30 @@ public class LoginController {
      * @param event
      * @throws FileNotFoundException
      */
-    public void loginButtonAction(ActionEvent event) throws FileNotFoundException {
+
+
+    public String currentUserLogin(){
+        String user = saveCurrentUser;
+        System.out.println(user + "Form current in LoginCon");
+        return user;
+    }
+
+
+
+    public void loginButtonAction(ActionEvent event) throws IOException {
+        File file1 = new File("currentUser.txt");
+        BufferedWriter buff1 = new BufferedWriter(new FileWriter(file1));
         if (usernameTextField.getText().isEmpty() != false && enterPasswordField.getText().isEmpty() != false) {
             loginMessageLabel.setText("Please enter username and password!");
         } else {
             if (validateLogin()) {
                 Stage stage = (Stage) loginButton.getScene().getWindow();
+                usernameSaved = usernameTextField.getText();
+                setCurrentUser(usernameSaved);
+                System.out.println(saveCurrentUser + "From LoginButton");
+                buff1.write(saveCurrentUser);
+                buff1.close();
+
                 loginSuccess(event);
                 usernameSaved = usernameTextField.getText();
                 stage.close();
@@ -88,6 +113,7 @@ public class LoginController {
             }
         }
     }
+
 
     /**
      * Cancels stage/closes windows.
@@ -103,7 +129,7 @@ public class LoginController {
      * @param event
      */
     @FXML
-    protected void loginSuccess(ActionEvent event) {
+    public void loginSuccess(ActionEvent event) {
         Parent root;
         try {
             root = FXMLLoader.load(Main.class.getResource("courseViewer.fxml"));
@@ -132,6 +158,23 @@ public class LoginController {
             usernameSaved = readDatabase.findInLine(usernameTextField.getText());
             passwordSaved = readDatabase.findInLine(enterPasswordField.getText());
             if (usernameTextField.getText().equals(usernameSaved) && enterPasswordField.getText().equals(passwordSaved))
+            {
+                return true;
+            }
+            else {
+                readDatabase.nextLine();
+            }
+        }
+        return false;
+    }
+
+    public boolean validateSignup(TextField usernameField2, String username) throws FileNotFoundException {
+        File database = new File("users.TXT");
+        Scanner readDatabase = new Scanner(database);
+
+        while(readDatabase.hasNext())
+        {
+            if (usernameField2.getText().equals(username) )
             {
                 return true;
             }
@@ -195,11 +238,19 @@ public class LoginController {
                 String password = passwordField.getText();
                 String qAns = question.getText();
                 try {
-                    myWriter.write(username + ", ");
-                    myWriter.write(password + ", ");
-                    myWriter.write(qAns + ",");
-                    myWriter.write("\n");
-                    myWriter.close();
+                    if(validateSignup(usernameField, username))
+                    {
+                        myWriter.write(username + ", ");
+                        myWriter.write(password + ", ");
+                        myWriter.write(qAns + ",");
+                        myWriter.write("\n");
+                        myWriter.close();
+                    }
+                    else
+                    {
+                        usernameExists.setVisible(true);
+                    }
+
                 } catch (IOException ex) {
                     throw new RuntimeException(ex);
                 }
@@ -261,6 +312,7 @@ public class LoginController {
             stage.setScene(scene);
             stage.show();
     }
+
     public boolean validateReset(String username, String qAns) throws FileNotFoundException {
         File database = new File("users.TXT");
         Scanner readDatabase = new Scanner(database);

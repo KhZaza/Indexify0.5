@@ -11,10 +11,10 @@ import javafx.scene.layout.GridPane;
 import javafx.event.*;
 import javafx.stage.Stage;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
+import java.util.HashMap;
+import java.util.Scanner;
+import application.LoginController;
 
 
 public class CourseController extends LoginController {
@@ -73,11 +73,108 @@ public class CourseController extends LoginController {
     /**
      * Method for the creation of courses, additionaly creates the buttons that provide deleting,
      * and renaming.  This method also gives functionality to the delete button and rename buttons.
-     */
-    protected void CreateClick(ActionEvent event) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getResource("login.fxml"));
-        File courses = new File("userCourses.TXT");
-        BufferedWriter myWriter = new BufferedWriter(new FileWriter("userCourses.TXT"));
+        */
+    protected void CreateClick(ActionEvent event) throws IOException
+    {
+        BufferedReader buffR = new BufferedReader(new FileReader("currentUser.txt"));
+        String currentUserName = buffR.readLine();
+
+        //File file1 = new File(currentUserName + ".txt");
+        BufferedWriter buffW = new BufferedWriter(new FileWriter(currentUserName+".TXT",true));
+        if(!addButton.isPressed())   //If button gets pressed (dw about syntax of that)
+        {
+            counter++;
+            Tab tab1 = new Tab("New Course " + counter);
+            tabCourses.getTabs().add(tab1);
+            try {
+//                    buffW.write(currentUserName + ", ");
+                    buffW.write(tab1.getText() + "\n");
+                    buffW.close();
+            }
+            catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+            System.out.println(currentUserName + " " + tab1.getText() + " ");
+//            currentUser.setText(currentUserName);
+
+        }
+
+     }
+
+    @FXML
+     public void initialize() throws IOException
+     {
+         BufferedReader buffR = new BufferedReader(new FileReader("currentUser.txt"));
+         String currentUserName = buffR.readLine();
+         currentUser.setText(currentUserName);
+
+         //Scanner courseScan = new Scanner(currentUserName+".TXT");
+         BufferedReader courseReader = new BufferedReader(new FileReader(currentUserName + ".txt"));
+         String line = null;
+         while((line = courseReader.readLine()) != null)
+         {
+             Tab tab1 = new Tab();
+             tab1.setText(line);
+             tabCourses.getTabs().add(tab1);
+         }
+
+     }
+
+
+     @FXML
+     protected void DeleteClick()
+     {
+         if(!delButton.isPressed())
+         {
+             Tab tab1 = tabCourses.getSelectionModel().getSelectedItem();
+             removeLineFromFile(tab1.getText());
+             tabCourses.getTabs().remove(tab1);
+         }
+     }
+     
+     
+    @FXML
+     protected void RenameClick(ActionEvent event)
+     {
+         if(!modButton.isPressed())
+         {
+            renameConfirmB.setVisible(true);
+            renameLabelText.setVisible(true);
+            renameText.setVisible(true);
+         }
+     }
+
+     @FXML
+     protected void renameConfirmButtonPress() throws IOException
+     {
+         if(!renameConfirmB.isPressed())
+         {
+
+             BufferedReader buffR = new BufferedReader(new FileReader("currentUser.txt"));
+             String currentUserName = buffR.readLine();
+             Scanner courseReader = new Scanner(new File(currentUserName + ".txt"));
+             StringBuffer buffer = new StringBuffer();
+             while(courseReader.hasNextLine())
+             {
+                 buffer.append(courseReader.nextLine()+System.lineSeparator());
+
+             }
+             String listOfCourses = buffer.toString();
+             String oldName = tabCourses.getSelectionModel().getSelectedItem().getText();
+             String newName = renameText.getText();
+             listOfCourses = listOfCourses.replaceFirst(oldName, newName);
+             FileWriter writer = new FileWriter(currentUserName+".txt");
+             writer.write(listOfCourses);
+             writer.flush();
+             Tab tab1 = tabCourses.getSelectionModel().getSelectedItem();
+             tab1.setText(renameText.getText());
+             renameConfirmB.setVisible(false);
+             renameLabelText.setVisible(false);
+             renameText.setVisible(false);
+         }
+     }
+
+     public void start() {
 
     }
 
