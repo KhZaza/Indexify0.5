@@ -175,21 +175,31 @@ public class LoginController {
         return false;
     }
 
-    public boolean validateSignup(TextField usernameField2, String username) throws FileNotFoundException {
+
+
+    public boolean validateSignup(String username) throws IOException {
         File database = new File("users.TXT");
         Scanner readDatabase = new Scanner(database);
 
-        while(readDatabase.hasNext())
+
+        while(readDatabase.hasNextLine())
+
         {
-            if (usernameField2.getText().equals(username) )
-            {
+            usernameSaved = readDatabase.findInLine(username);
+            if (usernameSaved == null){
                 return true;
+            }
+            if (usernameSaved.equals(username) )
+            {
+                System.out.println("User found");
+                return false;
             }
             else {
                 readDatabase.nextLine();
             }
         }
-        return false;
+        System.out.println("User not found");
+        return true;
     }
 
     /**
@@ -242,19 +252,22 @@ public class LoginController {
         usernameExists.setVisible(false);
 
         Button submit = new Button("Submit");
+        //is this supposed to be like this //yes// is it missing ) ? // no
         submit.setOnAction(new EventHandler<ActionEvent>() {
             public void handle(ActionEvent e) {
                 String username = usernameField.getText();
                 String password = passwordField.getText();
                 String qAns = question.getText();
                 try {
-                    if(validateSignup(usernameField, username))
+                    if(validateSignup(username))
                     {
                         myWriter.write(username + ", ");
                         myWriter.write(password + ", ");
                         myWriter.write(qAns + ",");
                         myWriter.write("\n");
                         myWriter.close();
+                        stage.close();
+
                     }
                     else
                     {
@@ -265,6 +278,8 @@ public class LoginController {
                     throw new RuntimeException(ex);
                 }
                 System.out.println(username + " " + password + " " + qAns);
+
+
 
                 stage.close();
 
@@ -312,15 +327,15 @@ public class LoginController {
     }
     @FXML
     public void resetCancel() throws IOException {
-            Stage stage2 = (Stage) reCancel2.getScene().getWindow();
-            stage2.close();
-            Stage stage = new Stage();
-            FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("login.fxml"));
-            Scene scene = new Scene(fxmlLoader.load(), 530, 400);
-            stage.setTitle("Indexify");
-            stage.setResizable(false);
-            stage.setScene(scene);
-            stage.show();
+        Stage stage2 = (Stage) reCancel2.getScene().getWindow();
+        stage2.close();
+        Stage stage = new Stage();
+        FXMLLoader fxmlLoader = new FXMLLoader(Main.class.getResource("login.fxml"));
+        Scene scene = new Scene(fxmlLoader.load(), 530, 400);
+        stage.setTitle("Indexify");
+        stage.setResizable(false);
+        stage.setScene(scene);
+        stage.show();
     }
 
     public boolean validateReset(String username, String qAns) throws FileNotFoundException {
