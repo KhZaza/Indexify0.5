@@ -187,15 +187,24 @@ public class LoginController {
         {
             usernameSaved = readDatabase.findInLine(username);
             if (usernameSaved == null){
-                return true;
+                if(readDatabase.hasNextLine())
+                {
+                    readDatabase.nextLine();
+                }
+                else
+                {
+                    System.out.println("file is empty");
+                    return true;
+                }
             }
-            if (usernameSaved.equals(username) )
+            else
             {
-                System.out.println("User found");
-                return false;
-            }
-            else {
-                readDatabase.nextLine();
+                if (usernameSaved.equals(username)) {
+                    System.out.println("User found");
+                    return false;
+                } else {
+                    readDatabase.nextLine();
+                }
             }
         }
         System.out.println("User not found");
@@ -281,7 +290,7 @@ public class LoginController {
 
 
 
-                stage.close();
+
 
 
             }
