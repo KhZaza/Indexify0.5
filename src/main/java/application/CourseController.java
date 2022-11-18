@@ -99,15 +99,16 @@ public class CourseController {
          BufferedReader buffR = new BufferedReader(new FileReader("currentUser.txt"));
          String currentUserName = buffR.readLine();
          currentUser.setText(currentUserName);
-
-         //Scanner courseScan = new Scanner(currentUserName+".TXT");
-         BufferedReader courseReader = new BufferedReader(new FileReader(currentUserName + ".txt"));
-         String line = null;
-         while((line = courseReader.readLine()) != null)
+         File existingFile = new File(currentUserName + ".txt");
+         if(existingFile.exists())
          {
-             Tab tab1 = new Tab();
-             tab1.setText(line);
-             tabCourses.getTabs().add(tab1);
+             BufferedReader courseReader = new BufferedReader(new FileReader(currentUserName + ".txt"));
+             String line = null;
+             while ((line = courseReader.readLine()) != null) {
+                 Tab tab1 = new Tab();
+                 tab1.setText(line);
+                 tabCourses.getTabs().add(tab1);
+             }
          }
 
      }
@@ -143,23 +144,33 @@ public class CourseController {
          {
 
              BufferedReader buffR = new BufferedReader(new FileReader("currentUser.txt"));
+
              String currentUserName = buffR.readLine();
+
              Scanner courseReader = new Scanner(new File(currentUserName + ".txt"));
+
              StringBuffer buffer = new StringBuffer();
+
              while(courseReader.hasNextLine())
              {
                  buffer.append(courseReader.nextLine()+System.lineSeparator());
 
              }
+
              String listOfCourses = buffer.toString();
              String oldName = tabCourses.getSelectionModel().getSelectedItem().getText();
              String newName = renameText.getText();
              listOfCourses = listOfCourses.replaceFirst(oldName, newName);
+
              FileWriter writer = new FileWriter(currentUserName+".txt");
              writer.write(listOfCourses);
              writer.flush();
+
              Tab tab1 = tabCourses.getSelectionModel().getSelectedItem();
              tab1.setText(renameText.getText());
+
+             buffR.close();
+             courseReader.close();
              renameConfirmB.setVisible(false);
              renameLabelText.setVisible(false);
              renameText.setVisible(false);
