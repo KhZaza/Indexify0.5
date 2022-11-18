@@ -155,13 +155,6 @@ public class LoginController {
             stage.setResizable(false);
             stage.show();
             System.out.println(saveCurrentUser + " from loginSuccess");
-//            currentUser.setText(saveCurrentUser);
-//            System.out.println(usernameSaved);
-////            TimeUnit.SECONDS.sleep(7);
-//            currentUser = usernameSaved;
-////            currentUser.setText(usernameSaved);
-////            System.out.println(currentUser.getText());
-//            System.out.println(currentUser);
 
 
         } catch (IOException e) {
