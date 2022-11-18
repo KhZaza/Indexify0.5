@@ -7,7 +7,6 @@ import javafx.scene.control.*;
 import javafx.scene.layout.GridPane;
 import javafx.event.*;
 import javafx.stage.Stage;
-
 import java.io.*;
 import java.util.HashMap;
 import java.util.Scanner;
@@ -55,8 +54,6 @@ public class CourseController {
     Button delButton;
 
     public String usernameSaved;
-//    public int counter = 0;
-//    public String saveCurrentUser;
 
 
 
@@ -71,7 +68,6 @@ public class CourseController {
         BufferedReader buffR = new BufferedReader(new FileReader("currentUser.txt"));
         String currentUserName = buffR.readLine();
 
-        //File file1 = new File(currentUserName + ".txt");
         BufferedWriter buffW = new BufferedWriter(new FileWriter(currentUserName+".TXT",true));
         if(!addButton.isPressed())   //If button gets pressed (dw about syntax of that)
         {
@@ -79,7 +75,6 @@ public class CourseController {
             Tab tab1 = new Tab("New Course " + counter);
             tabCourses.getTabs().add(tab1);
             try {
-//                    buffW.write(currentUserName + ", ");
                     buffW.write(tab1.getText() + "\n");
                     buffW.close();
             }
@@ -87,7 +82,6 @@ public class CourseController {
                 throw new RuntimeException(ex);
             }
             System.out.println(currentUserName + " " + tab1.getText() + " ");
-//            currentUser.setText(currentUserName);
 
         }
 

@@ -85,7 +85,6 @@ public class LoginController {
 
     /**
      * Action function for the login button.  Allows the button to run the validate functions and login success functions.
-     * @param event
      * @throws FileNotFoundException
      */
 
@@ -111,18 +110,8 @@ public class LoginController {
                 System.out.println(saveCurrentUser + "From LoginButton");
                 buff1.write(saveCurrentUser);
                 buff1.close();
-
                 loginSuccess(event);
-//                usernameSaved = usernameTextField.getText();
-
-
-                //Trying to figure out how to save save the saveCurrentUser to currentuser
-//                saveCurrentUser = usernameSaved;
-
                 System.out.println(saveCurrentUser + "From LoginButton2");
-//                currentUser.setText(saveCurrentUser);
-//                System.out.println("CurrentUser" + currentUser.getText());
-
                 stage.close();
             } else {
                 loginMessageLabel.setText("Username or Password does not exist.");
@@ -434,23 +423,9 @@ public class LoginController {
 
             //Delete the original file
             inFile.delete();
-//            if (!inFile.delete()) {
-//
-//                System.out.println("Could not delete file");
-//            }
-//
-//            else{
-//                System.out.println("file is deleted ");
-//            }
+
             //Rename the new file to the filename the original file had.
             tempFile.renameTo(inFile);
-//            if (!tempFile.renameTo(inFile))
-//                System.out.println("Could not rename file");
-//
-//            else{
-//                System.out.println("File was renamed");
-//
-//            }
 
         }
         catch (FileNotFoundException ex) {
