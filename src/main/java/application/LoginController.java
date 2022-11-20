@@ -100,9 +100,10 @@ public class LoginController {
     public void loginButtonAction(ActionEvent event) throws IOException {
         File file1 = new File("currentUser.txt");
         BufferedWriter buff1 = new BufferedWriter(new FileWriter(file1));
-        if (usernameTextField.getText().isEmpty() != false && enterPasswordField.getText().isEmpty() != false) {
+        if (usernameTextField.getText().isEmpty() || enterPasswordField.getText().isEmpty()) {
             loginMessageLabel.setText("Please enter username and password!");
-        } else {
+        }
+        else {
             if (validateLogin()) {
                 Stage stage = (Stage) loginButton.getScene().getWindow();
                 usernameSaved = usernameTextField.getText();
@@ -113,7 +114,8 @@ public class LoginController {
                 loginSuccess(event);
                 System.out.println(saveCurrentUser + "From LoginButton2");
                 stage.close();
-            } else {
+            }
+            else {
                 loginMessageLabel.setText("Username or Password does not exist.");
             }
         }
@@ -159,6 +161,9 @@ public class LoginController {
     public boolean validateLogin() throws FileNotFoundException {
         File database = new File("users.TXT");
         Scanner readDatabase = new Scanner(database);
+        if(usernameTextField.getText().isEmpty() || enterPasswordField.getText().isEmpty() ){
+            return false;
+        }
 
         while(readDatabase.hasNext())
         {
@@ -352,8 +357,6 @@ public class LoginController {
 
         while(readDatabase.hasNext())
         {
-
-
             if (usernameReset.getText().equals(username) && securityAnswer.getText().equals(qAns))
             {
                 return true;
@@ -375,11 +378,12 @@ public class LoginController {
         String username = usernameReset.getText();
         String password = brandNewPass.getText();
         String qAns = securityAnswer.getText();
-        removeLineFromFile(username);
 
 
 
         if (validateReset(username, qAns)) {
+            removeLineFromFile(username);
+
 
 
             BufferedWriter myWriter = new BufferedWriter(new FileWriter("users.TXT", true));
