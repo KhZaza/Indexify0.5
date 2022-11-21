@@ -52,8 +52,10 @@ public class CourseController {
     TextField renameText;
     @FXML
     Button delButton;
+    @FXML
+    Button renameCancelB;
 
-    public String usernameSaved;
+    public String currentUserName;
 
 
 
@@ -62,7 +64,7 @@ public class CourseController {
     /**
      * Method for the creation of courses, additionaly creates the buttons that provide deleting,
      * and renaming.  This method also gives functionality to the delete button and rename buttons.
-        */
+     */
     protected void CreateClick(ActionEvent event) throws IOException
     {
         BufferedReader buffR = new BufferedReader(new FileReader("currentUser.txt"));
@@ -75,8 +77,8 @@ public class CourseController {
             Tab tab1 = new Tab("New Course " + counter);
             tabCourses.getTabs().add(tab1);
             try {
-                    buffW.write(tab1.getText() + "\n");
-                    buffW.close();
+                buffW.write(tab1.getText() + "\n");
+                buffW.close();
             }
             catch (IOException ex) {
                 throw new RuntimeException(ex);
@@ -85,96 +87,106 @@ public class CourseController {
 
         }
 
-     }
+    }
 
     @FXML
-     public void initialize() throws IOException
-     {
-         BufferedReader buffR = new BufferedReader(new FileReader("currentUser.txt"));
-         String currentUserName = buffR.readLine();
-         currentUser.setText(currentUserName);
-         File existingFile = new File(currentUserName + ".txt");
-         if(existingFile.exists())
-         {
-             BufferedReader courseReader = new BufferedReader(new FileReader(currentUserName + ".txt"));
-             String line = null;
-             while ((line = courseReader.readLine()) != null) {
-                 Tab tab1 = new Tab();
-                 tab1.setText(line);
-                 tabCourses.getTabs().add(tab1);
-             }
-         }
-
-     }
-
-
-     @FXML
-     protected void DeleteClick()
-     {
-         if(!delButton.isPressed())
-         {
-             Tab tab1 = tabCourses.getSelectionModel().getSelectedItem();
-             removeLineFromFile(tab1.getText());
-             tabCourses.getTabs().remove(tab1);
-         }
-     }
-     
-     
-    @FXML
-     protected void RenameClick(ActionEvent event)
-     {
-         if(!modButton.isPressed())
-         {
-            renameConfirmB.setVisible(true);
-            renameLabelText.setVisible(true);
-            renameText.setVisible(true);
-         }
-     }
-
-     @FXML
-     protected void renameConfirmButtonPress() throws IOException
-     {
-         if(!renameConfirmB.isPressed())
-         {
-
-             BufferedReader buffR = new BufferedReader(new FileReader("currentUser.txt"));
-
-             String currentUserName = buffR.readLine();
-
-             Scanner courseReader = new Scanner(new File(currentUserName + ".txt"));
-
-             StringBuffer buffer = new StringBuffer();
-
-             while(courseReader.hasNextLine())
-             {
-                 buffer.append(courseReader.nextLine()+System.lineSeparator());
-
-             }
-
-             String listOfCourses = buffer.toString();
-             String oldName = tabCourses.getSelectionModel().getSelectedItem().getText();
-             String newName = renameText.getText();
-             listOfCourses = listOfCourses.replaceFirst(oldName, newName);
-
-             FileWriter writer = new FileWriter(currentUserName+".txt");
-             writer.write(listOfCourses);
-             writer.flush();
-
-             Tab tab1 = tabCourses.getSelectionModel().getSelectedItem();
-             tab1.setText(renameText.getText());
-
-             buffR.close();
-             courseReader.close();
-             renameConfirmB.setVisible(false);
-             renameLabelText.setVisible(false);
-             renameText.setVisible(false);
-         }
-     }
-
-     public void start() {
+    public void initialize() throws IOException
+    {
+        BufferedReader buffR = new BufferedReader(new FileReader("currentUser.txt"));
+        currentUserName = buffR.readLine();
+        buffR.close();
+        File existingFile = new File(currentUserName + ".txt");
+        if(existingFile.exists())
+        {
+            BufferedReader courseReader = new BufferedReader(new FileReader(currentUserName + ".txt"));
+            String line = null;
+            while ((line = courseReader.readLine()) != null) {
+                Tab tab1 = new Tab();
+                tab1.setText(line);
+                tabCourses.getTabs().add(tab1);
+            }
+            courseReader.close();
+        }
+        //currentUser.setText(currentUserName);
 
     }
 
+
+    @FXML
+    protected void DeleteClick()
+    {
+        if(!delButton.isPressed())
+        {
+            Tab tab1 = tabCourses.getSelectionModel().getSelectedItem();
+            removeLineFromFile(tab1.getText());
+            tabCourses.getTabs().remove(tab1);
+        }
+    }
+
+
+    @FXML
+    protected void RenameClick(ActionEvent event)
+    {
+        if(!modButton.isPressed())
+        {
+            renameConfirmB.setVisible(true);
+            renameLabelText.setVisible(true);
+            renameText.setVisible(true);
+            renameCancelB.setVisible(true);
+        }
+    }
+
+    @FXML
+    protected void renameConfirmButtonPress() throws IOException
+    {
+        if(!renameConfirmB.isPressed())
+        {
+
+            BufferedReader buffR = new BufferedReader(new FileReader("currentUser.txt"));
+
+            String currentUserName = buffR.readLine();
+
+            Scanner courseReader = new Scanner(new File(currentUserName + ".txt"));
+
+            StringBuffer buffer = new StringBuffer();
+
+            while(courseReader.hasNextLine())
+            {
+                buffer.append(courseReader.nextLine()+System.lineSeparator());
+
+            }
+
+            String listOfCourses = buffer.toString();
+            String oldName = tabCourses.getSelectionModel().getSelectedItem().getText();
+            String newName = renameText.getText();
+            listOfCourses = listOfCourses.replaceFirst(oldName, newName);
+
+            FileWriter writer = new FileWriter(currentUserName+".txt");
+            writer.write(listOfCourses);
+            writer.flush();
+            writer.close();
+
+            Tab tab1 = tabCourses.getSelectionModel().getSelectedItem();
+            tab1.setText(renameText.getText());
+
+            buffR.close();
+            courseReader.close();
+            renameConfirmB.setVisible(false);
+            renameLabelText.setVisible(false);
+            renameText.setVisible(false);
+            renameCancelB.setVisible(false);
+        }
+    }
+
+
+    @FXML
+    public void renameCancel()
+    {
+        renameConfirmB.setVisible(false);
+        renameLabelText.setVisible(false);
+        renameText.setVisible(false);
+        renameCancelB.setVisible(false);
+    }
 
 
     @FXML
@@ -256,4 +268,3 @@ public class CourseController {
     }
 
 }
-

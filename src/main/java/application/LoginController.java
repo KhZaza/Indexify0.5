@@ -1,6 +1,7 @@
 package application;
 
 
+import com.sun.org.apache.xerces.internal.xs.StringList;
 import javafx.application.Platform;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
@@ -83,32 +84,29 @@ public class LoginController {
 
 
 
+
+
     /**
      * Action function for the login button.  Allows the button to run the validate functions and login success functions.
      * @throws FileNotFoundException
      */
 
 
-    public String currentUserLogin(){
-        String user = saveCurrentUser;
-        System.out.println(user + "Form current in LoginCon");
-        return user;
-    }
-
-
 
     public void loginButtonAction(ActionEvent event) throws IOException {
         File file1 = new File("currentUser.txt");
-        BufferedWriter buff1 = new BufferedWriter(new FileWriter(file1));
         if (usernameTextField.getText().isEmpty() || enterPasswordField.getText().isEmpty()) {
             loginMessageLabel.setText("Please enter username and password!");
         }
         else {
-            if (validateLogin()) {
+            if (validateLogin(usernameTextField.getText(), enterPasswordField.getText())) {
+                BufferedWriter buff1 = new BufferedWriter(new FileWriter(file1));
                 Stage stage = (Stage) loginButton.getScene().getWindow();
                 usernameSaved = usernameTextField.getText();
                 setCurrentUser(usernameSaved);
                 System.out.println(saveCurrentUser + "From LoginButton");
+                passwordSaved = enterPasswordField.getText();
+                System.out.println(passwordSaved + "from LoginButtonAction");
                 buff1.write(saveCurrentUser);
                 buff1.close();
                 loginSuccess(event);
@@ -145,7 +143,7 @@ public class LoginController {
             stage.setScene(new Scene(root, 1024, 768));
             stage.setResizable(false);
             stage.show();
-            System.out.println(saveCurrentUser + " from loginSuccess");
+
 
 
         } catch (IOException e) {
@@ -158,25 +156,26 @@ public class LoginController {
      * @return Boolean: If account exists then true, if not then false.
      * @throws FileNotFoundException
      */
-    public boolean validateLogin() throws FileNotFoundException {
+    public boolean validateLogin(String username, String password) throws FileNotFoundException {
         File database = new File("users.TXT");
         Scanner readDatabase = new Scanner(database);
-        if(usernameTextField.getText().isEmpty() || enterPasswordField.getText().isEmpty() ){
-            return false;
-        }
 
-        while(readDatabase.hasNext())
+        while(readDatabase.hasNextLine())
         {
-            usernameSaved = readDatabase.findInLine(usernameTextField.getText());
-            passwordSaved = readDatabase.findInLine(enterPasswordField.getText());
-            if (usernameTextField.getText().equals(usernameSaved) && enterPasswordField.getText().equals(passwordSaved))
+            String[] details = readDatabase.nextLine().split(",");
+            usernameSaved = details[0];
+            passwordSaved = details[1];
+            System.out.println(usernameSaved + " from validateLogin");
+            System.out.println(passwordSaved);
+            if(username.equals(usernameSaved) && password.equals(passwordSaved))
             {
+                System.out.println("Statement working as intended");
+                readDatabase.close();
                 return true;
             }
-            else {
-                readDatabase.nextLine();
-            }
         }
+        readDatabase.close();
+        System.out.println("final false return");
         return false;
     }
 
@@ -188,30 +187,17 @@ public class LoginController {
 
 
         while(readDatabase.hasNextLine())
-
         {
-            usernameSaved = readDatabase.findInLine(username);
-            if (usernameSaved == null){
-                if(readDatabase.hasNextLine())
-                {
-                    readDatabase.nextLine();
-                }
-                else
-                {
-                    System.out.println("file is empty");
-                    return true;
-                }
-            }
-            else
+            String[] details = readDatabase.nextLine().split(",");
+            usernameSaved = details[0];
+            if (usernameSaved.equals(username))
             {
-                if (usernameSaved.equals(username)) {
-                    System.out.println("User found");
-                    return false;
-                } else {
-                    readDatabase.nextLine();
-                }
+                System.out.println("Username already exists");
+                readDatabase.close();
+                return false;
             }
         }
+        readDatabase.close();
         System.out.println("User not found");
         return true;
     }
@@ -221,8 +207,6 @@ public class LoginController {
      */
     public void resetPassword()
     {
-
-
         Parent root;
         try {
             root = FXMLLoader.load(Main.class.getResource("resetPassword.fxml"));
@@ -246,7 +230,7 @@ public class LoginController {
      */
     @FXML
     protected void signUp() throws IOException {
-        FileWriter myWriter = new FileWriter("users.TXT", true);
+
         Stage stage = new Stage();
         stage.setTitle("Sign Up");
 
@@ -262,7 +246,7 @@ public class LoginController {
         Label securityQuestion = new Label("Security Question: What city were you born in? ");
         TextField question = new TextField();
 
-        Label usernameExists = new Label("Username already Exists");
+        Label usernameExists = new Label("Error please Try again");
         usernameExists.setVisible(false);
 
         Button submit = new Button("Submit");
@@ -272,10 +256,12 @@ public class LoginController {
                 String password = passwordField.getText();
                 String qAns = question.getText();
                 try {
-                    if(validateSignup(username))
+
+                    if(validateSignup(username) && !usernameField.getText().isEmpty() && !passwordField.getText().isEmpty() && !question.getText().isEmpty() )
                     {
-                        myWriter.write(username + ", ");
-                        myWriter.write(password + ", ");
+                        FileWriter myWriter = new FileWriter("users.TXT", true);
+                        myWriter.write(username + ",");
+                        myWriter.write(password + ",");
                         myWriter.write(qAns + ",");
                         myWriter.write("\n");
                         myWriter.close();
@@ -355,16 +341,19 @@ public class LoginController {
         File database = new File("users.TXT");
         Scanner readDatabase = new Scanner(database);
 
-        while(readDatabase.hasNext())
+        while(readDatabase.hasNextLine())
         {
-            if (usernameReset.getText().equals(username) && securityAnswer.getText().equals(qAns))
+            String[] details = readDatabase.nextLine().split(",");
+            String username2 = details[0];
+            String qAns2 = details[2];
+            if (username2.equals(username) && qAns2.equals(qAns))
             {
+                readDatabase.close();
                 return true;
             }
-            else {
-                readDatabase.nextLine();
-            }
+
         }
+        readDatabase.close();
         return false;
     }
 
@@ -381,15 +370,15 @@ public class LoginController {
 
 
 
-        if (validateReset(username, qAns)) {
-            removeLineFromFile(username);
+        if (validateReset(username, qAns) && !brandNewPass.getText().isEmpty()) {
 
 
+            removeLineFromFile(username, "users.TXT");
 
             BufferedWriter myWriter = new BufferedWriter(new FileWriter("users.TXT", true));
             try {
-                myWriter.write(username + ", ");
-                myWriter.write(password + ", ");
+                myWriter.write(username + ",");
+                myWriter.write(password + ",");
                 myWriter.write(qAns + ",");
                 myWriter.write("\n");
                 myWriter.close();
@@ -418,41 +407,43 @@ public class LoginController {
     /**
      * Is used in order to delete data from the flat file so that new data can be written in its place
      */
-    public void removeLineFromFile(String usernameSaved) {
-
+    public void removeLineFromFile(String username, String fileName)
+    {
         try {
 
-            File inFile = new File("users.TXT");
+            File inFile = new File(fileName);
 
-            if (!inFile.isFile()) {
+            if (!inFile.isFile())
+            {
                 System.out.println("Parameter is not an existing file");
                 return;
             }
 
             //Construct the new file that will later be renamed to the original filename.
             File tempFile = new File(inFile.getAbsolutePath() + ".tmp");
-
-            BufferedReader br = new BufferedReader(new FileReader("users.TXT"));
+            Scanner scanFile = new Scanner(inFile);
             PrintWriter pw = new PrintWriter(new FileWriter(tempFile));
-
-            String line = null;
-
             //Read from the original file and write to the new
             //unless content matches data to be removed.
-            while ((line = br.readLine()) != null) {
-                if (line.trim().indexOf(usernameSaved) == -1) {
-                    pw.println(line);
+            while (scanFile.hasNextLine())
+            {
+                String[] details = scanFile.nextLine().split(",");
+                if(!username.equals(details[0]))
+                {
+                    pw.println(details[0] + "," + details[1] + "," + details[2] + ",");
                     pw.flush();
                 }
             }
+
             pw.close();
-            br.close();
+            scanFile.close();
 
-            //Delete the original file
             inFile.delete();
-
             //Rename the new file to the filename the original file had.
             tempFile.renameTo(inFile);
+
+            pw.close();
+            scanFile.close();
 
         }
         catch (FileNotFoundException ex) {
@@ -462,6 +453,7 @@ public class LoginController {
             ex.printStackTrace();
         }
     }
+
     public void setCurrentUser(String s)
     {
         saveCurrentUser = s;
